@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    container_name: api-school
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+

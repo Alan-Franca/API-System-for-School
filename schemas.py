@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import List
+from typing import List, Optional
 
 class Matricula(BaseModel):
     aluno_id: int
@@ -12,9 +12,10 @@ class Matricula(BaseModel):
 Matriculas = List[Matricula]
 
 class Aluno(BaseModel):
+    id: Optional[int] = None
     nome: str
     email: EmailStr
-    telefone: str
+    telefone: Optional[str] = None
 
     class Config:
         from_attributes = True

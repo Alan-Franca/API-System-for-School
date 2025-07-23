@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle Escolar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-section h2 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #004494;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+
+        #results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #e9e9e9;
+            white-space: pre-wrap;
+            /* Mantém a formatação do JSON */
+            word-wrap: break-word;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Painel de Controle Escolar</h1>
+
+        <div class="form-section">
+            <h2>Gerenciar Alunos</h2>
+            <form id="alunoForm">
+                <label for="alunoId">ID do Aluno (para buscar, atualizar ou deletar):</label>
+                <input type="number" id="alunoId" name="alunoId" placeholder="Ex: 1">
+
+                <label for="alunoNome">Nome:</label>
+                <input type="text" id="alunoNome" name="alunoNome" placeholder="Ex: João da Silva">
+
+                <label for="alunoEmail">Email:</label>
+                <input type="email" id="alunoEmail" name="alunoEmail" placeholder="Ex: joao.silva@example.com">
+
+                <label for="alunoTelefone">Telefone:</label>
+                <input type="text" id="alunoTelefone" name="alunoTelefone" placeholder="Ex: (11) 98765-4321">
+
+                <button type="button" onclick="createAluno()">Criar Aluno</button>
+                <button type="button" onclick="getAlunoById()">Buscar por ID</button>
+                <button type="button" onclick="getAlunoByNome()">Buscar por Nome</button>
+                <button type="button" onclick="updateAluno()">Atualizar Aluno</button>
+                <button type="button" class="delete-button" onclick="deleteAluno()">Deletar Aluno</button>
+                <button type="button" onclick="getAllAlunos()">Listar Todos</button>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <h2>Gerenciar Cursos</h2>
+            <form id="cursoForm">
+                <label for="cursoCodigo">Código do Curso (para buscar, criar ou atualizar):</label>
+                <input type="text" id="cursoCodigo" name="cursoCodigo" placeholder="Ex: ADS2024">
+
+                <label for="cursoNome">Nome do Curso:</label>
+                <input type="text" id="cursoNome" name="cursoNome"
+                    placeholder="Ex: Análise e Desenvolvimento de Sistemas">
+
+                <label for="cursoDescricao">Descrição:</label>
+                <input type="text" id="cursoDescricao" name="cursoDescricao"
+                    placeholder="Ex: Curso superior de tecnologia...">
+
+                <button type="button" onclick="createCurso()">Criar Curso</button>
+                <button type="button" onclick="getCursoByCodigo()">Buscar por Código</button>
+                <button type="button" onclick="updateCurso()">Atualizar Curso</button>
+                <button type="button" onclick="getAllCursos()">Listar Todos</button>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <h2>Gerenciar Matrículas</h2>
+            <form id="matriculaForm">
+                <label for="matriculaAlunoId">ID do Aluno:</label>
+                <input type="number" id="matriculaAlunoId" name="matriculaAlunoId"
+                    placeholder="ID do aluno para matricular">
+
+                <label for="matriculaCursoId">ID do Curso:</label>
+                <input type="number" id="matriculaCursoId" name="matriculaCursoId"
+                    placeholder="ID do curso para matricular">
+                <button type="button" onclick="createMatricula()">Realizar Matrícula</button>
+            </form>
+            <hr style="margin: 20px 0;">
+            <label for="consultaAlunoNome">Buscar cursos pelo nome do Aluno:</label>
+            <input type="text" id="consultaAlunoNome" name="consultaAlunoNome" placeholder="Digite o nome do aluno">
+            <button type="button" onclick="getMatriculasByAluno()">Consultar</button>
+            <br><br>
+            <label for="consultaCursoCodigo">Buscar alunos pelo código do Curso:</label>
+            <input type="text" id="consultaCursoCodigo" name="consultaCursoCodigo"
+                placeholder="Digite o código do curso">
+            <button type="button" onclick="getAlunosByCurso()">Consultar</button>
+        </div>
+
+        <h2>Resultados</h2>
+        <pre id="results"></pre>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        const resultsDiv = document.getElementById('results');
+
+        function displayResults(data, status) {
+            resultsDiv.textContent = `Status: ${status}\n\n${JSON.stringify(data, null, 2)}`;
+        }
+
+        function limparCampos(...formIds) {
+            formIds.forEach(id => {
+                const form = document.getElementById(id);
+                if (form) {
+                    const inputs = form.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        input.value = '';
+                    });
+                }
+            });
+        }
+
+        async function createAluno() {
+            const nome = document.getElementById('alunoNome').value;
+            const email = document.getElementById('alunoEmail').value;
+            const telefone = document.getElementById('alunoTelefone').value;
+            if (!nome || !email || !telefone) {
+                alert('Nome e Email são obrigatórios para criar um aluno.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/alunos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, email, telefone })
+            });
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('alunoForm');
+        }
+
+        async function getAlunoById() {
+            const id = document.getElementById('alunoId').value;
+            if (!id) {
+                alert('ID do aluno é obrigatório.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/alunos/${id}`);
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('alunoForm');
+        }
+
+        async function getAlunoByNome() {
+            const nome = document.getElementById('alunoNome').value;
+            if (!nome) {
+                alert('Nome do aluno é obrigatório para a busca.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/alunos/nome/${nome}`);
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('alunoForm');
+        }
+
+        async function getAllAlunos() {
+            const response = await fetch(`${API_BASE_URL}/alunos`);
+            const data = await response.json();
+            displayResults(data, response.status);
+        }
+
+        async function updateAluno() {
+            const id = document.getElementById('alunoId').value;
+            const nome = document.getElementById('alunoNome').value;
+            const email = document.getElementById('alunoEmail').value;
+            if (!id || !nome || !email) {
+                alert('ID, Nome e Email são obrigatórios para atualizar.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/alunos/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: parseInt(id), nome, email })
+            });
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('alunoForm');
+        }
+
+        async function deleteAluno() {
+            const id = document.getElementById('alunoId').value;
+            if (!id) {
+                alert('ID do aluno é obrigatório para deletar.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/alunos/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('alunoForm');
+        }
+
+        async function createCurso() {
+            const codigo = document.getElementById('cursoCodigo').value;
+            const nome = document.getElementById('cursoNome').value;
+            const descricao = document.getElementById('cursoDescricao').value;
+            if (!codigo || !nome || !descricao) {
+                alert('Código, Nome e Descrição são obrigatórios.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/cursos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codigo, nome, descricao })
+            });
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('cursoForm');
+        }
+
+        async function getAllCursos() {
+            const response = await fetch(`${API_BASE_URL}/cursos`);
+            const data = await response.json();
+            displayResults(data, response.status);
+        }
+
+        async function getCursoByCodigo() {
+            const codigo = document.getElementById('cursoCodigo').value;
+            if (!codigo) {
+                alert('O código do curso é obrigatório.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/cursos/${codigo}`);
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('cursoForm');
+        }
+
+        async function updateCurso() {
+            const codigo = document.getElementById('cursoCodigo').value;
+            const nome = document.getElementById('cursoNome').value;
+            const descricao = document.getElementById('cursoDescricao').value;
+            if (!codigo || !nome || !descricao) {
+                alert('Código, Nome e Descrição são obrigatórios para atualizar.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/cursos/${codigo}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codigo, nome, descricao })
+            });
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('cursoForm');
+        }
+
+        async function createMatricula() {
+            const aluno_id = parseInt(document.getElementById('matriculaAlunoId').value);
+            const curso_id = parseInt(document.getElementById('matriculaCursoId').value);
+            if (!aluno_id || !curso_id) {
+                alert('ID do Aluno e ID do Curso são obrigatórios.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/matriculas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ aluno_id, curso_id })
+            });
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('matriculaForm');
+        }
+
+        async function getMatriculasByAluno() {
+            const nomeAluno = document.getElementById('consultaAlunoNome').value;
+            if (!nomeAluno) {
+                alert('O nome do aluno é obrigatório.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/matriculas/aluno/${nomeAluno}`);
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('matriculaForm');
+        }
+
+        async function getAlunosByCurso() {
+            const codigoCurso = document.getElementById('consultaCursoCodigo').value;
+            if (!codigoCurso) {
+                alert('O código do curso é obrigatório.');
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/matriculas/curso/${codigoCurso}`);
+            const data = await response.json();
+            displayResults(data, response.status);
+            limparCampos('matriculaForm');
+        }
+    </script>
+
+</body>
+
+</html>
